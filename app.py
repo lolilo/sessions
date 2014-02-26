@@ -16,10 +16,6 @@ def index():
     else: 
         return render_template("index.html")
 
-
-
-
-
 @app.route("/", methods=["POST"]) # responds to POST. SUPER IMPORTANT!!!!!!!! PAY ATTENTION!
 # change method = "POST" on html file
 def process_login():
@@ -38,13 +34,17 @@ def process_login():
         flash('Password incorrect, there may be a ferret stampeded in progress!')
     return redirect(url_for("index"))
 
-
+# The handler should take the username passed to it, and look up the user's id by their name.
 @app.route("/user")
 def view_user():
     thewall.connect_to_db()
-    user_id = request.args.get("user_id")
-    user = get_user_by_name(user_id)
-    html = render_template('wall.html', user_id = user)
+    username = request.args.get("username")
+    user_id = thewall.get_user_by_name(username)
+    # Use that id to look up that user's wall_posts, then send the collection of rows to a template named wall.html.
+    wall_posts = thewall.get_wall_posts_by_user_id(user_id)
+    html = render_template('wall.html', wall_posts = wall_posts, author_name = username)
+
+    return html
 
 # need to clear session
 @app.route("/logout")

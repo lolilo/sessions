@@ -3,12 +3,39 @@ import sqlite3
 DB = None
 CONN = None
 
+
+
+# users:
+# id - int, primary key
+# username - varchar
+# password - varchar
+
+# wall_posts:
+# id - int, primary key
+# owner_id - int (refers to users.id) -- not redundant!
+# author_id - int (refers to users.id)
+# created_at - datetime
+# content - text
+
+def connect_to_db():
+    global DB, CONN
+    CONN = sqlite3.connect("thewall.db")
+    DB = CONN.cursor()
+
+# look up user's id by their name
 def get_user_by_name(username):
-    query = """SELECT id FROM users JOIN wall_posts ON wall_posts.owner_id=users.id 
-        WHERE users.username = ?"""
+    query = """SELECT id FROM users WHERE username=?"""
     DB.execute(query, (username,))
     row = DB.fetchone()
-    return row
+    return row[0]
+
+# return rows of wall posts
+def get_wall_posts_by_user_id(user_id):
+    query = """SELECT * FROM wall_posts WHERE owner_id=?"""
+    DB.execute(query, (user_id,))
+    rows = DB.fetchall()
+    return rows
+    # We could also make this a dictionary. 
 
 
 def main():
@@ -22,7 +49,9 @@ def main():
         args = tokens[1:]
 
         if command == "username":
-            get_user_by_name(*args)
+            print get_user_by_name(*args)
+        elif command == "wall_posts":
+            print get_wall_posts_by_user_id(*args)
 
         # if command == "student":
         #     get_student_by_github(*args) 

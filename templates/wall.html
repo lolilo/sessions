@@ -1,0 +1,66 @@
+<html>
+<head>
+    <style>
+        div#wrapper {
+            padding: 10px;
+            float:left;
+            width: 900px;
+            margin: -1px 0px 0px 0px;
+            border: solid blue 10px;
+        }
+
+        div#projects{
+            margin: 10px 10px 10px 10px;
+            width: 160px;
+            height: 250px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            float:left;
+            border: solid red 3px;
+        }
+
+        div#github{
+            width: 160px;
+            height: 250px;
+            margin: 10px 10px 10px 10px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            float:left;
+            border: solid red 3px;
+            }
+
+        div#section{
+/*            width: 160px;
+            height: 250px;*/
+            margin: 10px 10px 10px 10px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            /*float:left;*/
+            border: solid red 3px;
+            }
+
+    </style>
+</head>
+
+<body>
+<h1> {{author_name}}'s wall posts </h1>
+
+<div id="wrapper">
+    <div id="section">
+        <p><h2> Wall Posts </h2></p>
+            {% for row in wall_posts %}
+                <div id = "section">
+                    <p> {{row[4]}} </p>
+                        <br>{{author_name}}</br>
+                        {{row[3]}}
+                </div>           
+            {% endfor %}
+    </div>
+</div>
+
+
+</body>
+</html>

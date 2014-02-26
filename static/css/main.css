@@ -1,0 +1,28 @@
+h2 {
+    color: red;
+}
+
+body {
+    background-color: #eee;
+}
+
+form.signin {
+    width: 330px;
+    margin: 50px auto;
+}
+
+/*The word 'auto' tells css to fill up the left and right (technically, the bottom too) margins 
+as much as possible, this placing the form in the center. Take heed, from now on, 
+you should get into the habit of only using margins to move elements around. 
+It will make your life infinitely easier.*/
+
+
+/*ignore this error of overqualification -- it's good to have this level of detail*/
+form.signin, input.form-control {
+    margin-bottom: 5px;
+}
+
+form.signin input.btn {
+    margin-top: 15px;
+}
+

@@ -19,12 +19,12 @@ def index():
 @app.route("/", methods=["POST"]) # responds to POST. SUPER IMPORTANT!!!!!!!! PAY ATTENTION!
 # change method = "POST" on html file
 def process_login():
-    user_id = request.form.get("username")
+    username = request.form.get("username")
     password = request.form.get("password")
     # flash is a function that takes in a string. Each string is queued in the flash,
     # waiting to be displayed only once.
-    # username = model.authenticate(username, password)
 
+    user_id = model.authenticate(username, password)
     thewall.connect_to_db()
 
     if username != None:
@@ -32,21 +32,37 @@ def process_login():
         session['username'] = user_id # put user_id into the session rather than username
     else:
         flash('Password incorrect, there may be a ferret stampeded in progress!')
+
     return redirect(url_for("index"))
 
 # The handler should take the username passed to it, and look up the user's id by their name.
-@app.route("/user")
-def view_user():
+@app.route("/user/<username>")
+def view_user(username):
     thewall.connect_to_db()
-    username = request.args.get("username")
     user_id = thewall.get_user_by_name(username)
     # Use that id to look up that user's wall_posts, then send the collection of rows to a template named wall.html.
     wall_posts = thewall.get_wall_posts_by_user_id(user_id)
-    html = render_template('wall.html', wall_posts = wall_posts, author_name = username)
+    html = render_template('wall.html', owner_id = username, wall_posts = wall_posts, author_name = username)
 
     return html
 
-# need to clear session
+# It will receive the text from handler number one, /user, extract a username from the url, 
+# and extract the user id of the currently logged-in user from the session.
+@app.route("/post_to_wall/<username>", methods=["POST"])
+def post_to_wall(username):
+    # username = request.args.get("username") # it gets this from the URL
+    owner_id = thewall.get_user_by_name(username) # user_id
+
+    logged_in_user = session.get('username') # currently logged-in user
+    author_id = thewall.get_user_by_name(logged_in_user) # currently logged-in user
+    content = request.form.get("content")
+    print content
+
+    if content != None:
+        thewall.new_wall_post(owner_id, author_id, content)
+    return redirect(url_for("view_user", username=username))
+
+# clear session
 @app.route("/logout")
 def clear_session():
     session.clear()

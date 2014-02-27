@@ -9,28 +9,6 @@
             border: solid blue 10px;
         }
 
-        div#projects{
-            margin: 10px 10px 10px 10px;
-            width: 160px;
-            height: 250px;
-            padding: 10px;
-            background-color: rgba(255, 255, 255, 0.5);
-            border-radius: 8px;
-            float:left;
-            border: solid red 3px;
-        }
-
-        div#github{
-            width: 160px;
-            height: 250px;
-            margin: 10px 10px 10px 10px;
-            padding: 10px;
-            background-color: rgba(255, 255, 255, 0.5);
-            border-radius: 8px;
-            float:left;
-            border: solid red 3px;
-            }
-
         div#section{
 /*            width: 160px;
             height: 250px;*/
@@ -47,6 +25,32 @@
 
 <body>
 <h1> {{author_name}}'s wall posts </h1>
+
+{% if session.get('username') %}
+
+<!-- must specify POST method here to match with desired handler -->
+<form class="signin" action="/post_to_wall/{{owner_id}}" method="POST">
+    <h2 class="signin-heading">New Wall Post</h2>
+<!--     <ul>
+        {% for message in get_flashed_messages() %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul> -->
+
+    <input type="text" class="form-control" placeholder="What's on your mind?" name="content">
+
+    <input type="submit" class="btn btn-lg btn-primary btn-block" value="Submit">
+</form>
+
+{% else %}
+  Log in to your account to post.
+{% endif %}
+
+
+
+
+
+
 
 <div id="wrapper">
     <div id="section">

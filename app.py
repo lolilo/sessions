@@ -56,7 +56,6 @@ def post_to_wall(username):
     logged_in_user = session.get('username') # currently logged-in user
     author_id = thewall.get_user_by_name(logged_in_user) # currently logged-in user
     content = request.form.get("content")
-    print content
 
     if content != None:
         thewall.new_wall_post(owner_id, author_id, content)
@@ -70,7 +69,37 @@ def clear_session():
 
 @app.route("/register")
 def register():
-    return render_template("register.html")
+    if session.get('username'):
+        username = session.get('username')
+        return redirect(url_for("view_user", username=username))
+    else: 
+        return redirect(url_for("create_account"))
+
+@app.route("/create_account")
+def create_account():
+    if session.get('username'):
+        return redirect(url_for("register"))
+    else: 
+        html = render_template('register.html')
+        return html
+
+@app.route("/create_account", methods=["POST"])
+def process_create_account():
+    thewall.connect_to_db()
+
+    username = request.form.get("username")
+    password = request.form.get('password')
+    new_user_created = thewall.new_user(username, password)
+
+    if new_user_created:
+        flash('New account successfully registered! Please log in.')
+        return redirect(url_for("index"))
+    else: 
+        flash('Sorry, that username is already registered. Please try another.')
+        return redirect(url_for("register"))
+    # If they do exist, flash an error message and redirect them to the register page.
+    # If they don't exist, create a new record for them in the database, 
+    # flash a message saying their user was created, then redirect them to the login page.
 
 if __name__ == "__main__":
     app.run(debug = True)

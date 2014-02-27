@@ -4,9 +4,6 @@ import datetime
 DB = None
 CONN = None
 
-
-
-
 # id          username    password  
 # ----------  ----------  ----------
 # 1           lilo        pass      
@@ -44,17 +41,17 @@ def connect_to_db():
 
 # ASK!!! CAN I NOT DO THIS? 
 def show_table(table):
-    query = """SELECT * FROM ?"""
-    DB.execute(query, (table,))
+    print "in show_table"
+    # DANGER WILL ROBINSON DON'T DO THIS
+    # should validate user input via alphabet check or dictionary of valid table names
+    query = """SELECT * FROM `%s`""" % table
+    DB.execute(query)
     rows = DB.fetchall()
     return rows
 
 # look up user's id by their name
 def get_user_by_name(username):
     query = """SELECT id FROM users WHERE username=?"""
-    print 'USERNAME', username
-    print ''
-    
     DB.execute(query, (username,))
     row = DB.fetchone()
 
@@ -75,7 +72,28 @@ def new_wall_post(owner_id, author_id, content):
     # print time
     DB.execute(query, (owner_id, author_id, time_unformatted, content))
     CONN.commit()
-    print "Successfully added wall post."
+    print "Successfully added wall post to TABLE wall_posts."
+
+def new_user(username, password):
+    check_if_user_exists_query = """SELECT * from users WHERE username=?"""
+
+    print 'USERNAME!', username
+    print 'PASSOWRD', password
+    print ''
+
+    DB.execute(check_if_user_exists_query, (username,))
+    existing_username = DB.fetchone()
+    # print existing_username
+
+    if existing_username != None:
+        # return "That username is already taken."
+        return False
+    else: 
+        query = """INSERT INTO users (username, password) VALUES (?,?)"""
+        DB.execute(query, (username, password))
+        CONN.commit()
+        # return "Successfully added new user to TABLE users."
+        return True
 
 def main():
     connect_to_db()
@@ -87,7 +105,9 @@ def main():
         command = tokens[0]
         args = tokens[1:]
 
+        print command
         if command == "table":
+            print "run show table"
             print show_table(*args)
         elif command == "username":
             print get_user_by_name(*args)
@@ -98,26 +118,10 @@ def main():
             author_id = args[1] # currently logged-in user
             content = ' '.join(args[2:])
             new_wall_post(owner_id, author_id, content)
-
-        # if command == "student":
-        #     get_student_by_github(*args) 
-        # elif command == "new_student":
-        #     make_new_student(*args)
-        # elif command == "project_title":
-        #     get_project_by_title(*args)
-        # elif command == "new_project":
-        #     # need to format for string as second argument 
-        #     title = args[0]
-        #     desc = ' '.join(args[1:-1]) 
-        #     max_grade = args[-1]  
-        #     make_new_project(title, desc, max_grade)
-        # elif command == "get_grade":
-        #     get_grade_by_project(*args)
-        # elif command == "assign_grade":
-        #     give_grade_to_student(*args)  
-        # elif command == "show_student_grades":
-        #     show_all_grades_for_student(*args)      
-
+        elif command == "new_user":
+            username = args[0]
+            password = args[1]
+            print new_user(username, password)
 
     CONN.close()
 
